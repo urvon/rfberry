@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <echo>Phase install goal run</echo>
+  <delete quiet="true">
+    <fileset dir="../../../framework/freedomotic-core/plugins//devices/rfberry"/>
+  </delete>
+  <copydir dest="../../../framework/freedomotic-core/plugins//devices/rfberry" src="target/rfberry"></copydir>
+</target>
+</project>
