@@ -31,6 +31,7 @@ public class RFberry
         extends Protocol {
 
     private static final Logger LOG = Logger.getLogger(RFberry.class.getName());
+    private static String OS = System.getProperty("os.name").toLowerCase();
     final int POLLING_WAIT;
 
     public RFberry() {
@@ -77,9 +78,14 @@ public class RFberry
         params[4] = "ON";
         
         try {
-        	Runtime run = Runtime.getRuntime(); 
-
-        	String[] cmd = {"/bin/sh", "-c","./radioEmission 0 12325261 3 on"}; 
+        	Runtime run = Runtime.getRuntime();
+        	String cmdPrompt = "/bin/sh";
+        	
+        	if(OS.contains("windows"))
+        		cmdPrompt = "cmd.exe";
+        	
+        	String path = System.getProperty("user.dir")+System.getProperty("path.separator")+"radioEmission 0 12325261 3 on";
+        	String[] cmd = {cmdPrompt, "-c","./radioEmission 0 12325261 3 on"}; 
 
         	Process p = run.exec(cmd);
         	
