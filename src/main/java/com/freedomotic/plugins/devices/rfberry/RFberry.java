@@ -24,13 +24,17 @@ import com.freedomotic.api.Protocol;
 import com.freedomotic.app.Freedomotic;
 import com.freedomotic.exceptions.UnableToExecuteException;
 import com.freedomotic.reactions.Command;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.logging.Logger;
 
 public class RFberry
         extends Protocol {
 
     private static final Logger LOG = Logger.getLogger(RFberry.class.getName());
+    private String pluginPath = System.getProperty("user.dir") + "/framework/freedomotic-core/plugins/devices/" + this.shortName;
     final int POLLING_WAIT;
 
     public RFberry() {
@@ -69,6 +73,7 @@ public class RFberry
     @Override
     protected void onRun() {
     	//test envoi signal RF
+    	
         String[] params = new String[5];
         params[0] = "./radioEmission";
         params[1] = "0";
@@ -77,14 +82,28 @@ public class RFberry
         params[4] = "ON";
         
         try {
+        	String workingdirectory = System.getProperty("user.dir");
+        	System.out.println(workingdirectory);
+        	
         	Runtime run = Runtime.getRuntime(); 
 
-        	String[] cmd = {"/bin/sh", "-c","./radioEmission 0 12325261 3 on"}; 
-
-        	Process p = run.exec(cmd);
+        	String[] cmd = {"/bin/sh", "-c","sudo " + pluginPath + "/./radioEmission 0 12325261 3 off"}; 
+        	LOG.info("Lancement de la commande :" + cmd[2]);
+        	//String[] cmd = {"/bin/sh", "-c",pluginPath + "/./test"}; 
+        	//String[] cmd = {"/bin/sh", "-c","/home/ludo/workspace/freedomotic/plugins/" +
+        			//"devices/rfberry/src/main/resources/ > /home/ludo/coucou.txt"};
+        	//ProcessBuilder p = run.exec(cmd);
         	
-        	//ProcessBuilder pb = new ProcessBuilder(params);
-        	//Process p = pb.start();
+        	ProcessBuilder pb = new ProcessBuilder(cmd);
+            Process p = pb.start();
+            try {
+				p.waitFor();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+        	
         	
 			LOG.info("le programme RadioEmission a retourné le code :" + p.exitValue());
 		} catch (IOException e) {
@@ -99,6 +118,12 @@ public class RFberry
 
     @Override
     protected void onStart() {
+    	try {
+    		Runtime.getRuntime().exec("chmod 777 "+ this.pluginPath + "/radioEmission");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         LOG.info("RFberry plugin is started");
     }
 
